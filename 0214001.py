@@ -11,9 +11,9 @@ from datetime import timedelta
 # you can override them on a per-task basis during operator initialization
 
 default_args = {
-    'owner': 'jifeng.si',
+    'owner': 'owen123',   # dag属于哪个用户
     'depends_on_past': False,   # True时，表示只有当上一个task成功时，当前task才能启动
-    'start_date': airflow.utils.dates.days_ago(2),
+    'start_date': airflow.utils.dates.days_ago(2),  # dag开始的时间
     'email': ['1203745031@qq.com'], # 可以配置一个邮件列表，触发邮件发送时将向列表中的邮箱发送对应邮件
     'email_on_failure': False,  # task失败时，是否触发邮件发送
     'email_on_retry': False,    # 重试时是否触发邮件发送
@@ -22,7 +22,7 @@ default_args = {
 }
 
 # -------------------------------------------------------------------------------
-# dag
+# dag   实例化DAG对象来进行任务
 
 dag = DAG(
     dag_id='example_hello_world_dag',   # 唯一标识
