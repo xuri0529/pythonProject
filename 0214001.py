@@ -18,15 +18,15 @@ default_args = {
     'email_on_failure': False,  # task失败时，是否触发邮件发送
     'email_on_retry': False,    # 重试时是否触发邮件发送
     'retries': 1,   # 失败重试次数
-    'retry_delay': timedelta(minutes=5) # 失败重试时的时间间隔
+    'retry_delay': timedelta(minutes=5) # 失败重试时，之间的时间间隔
 }
 
 # -------------------------------------------------------------------------------
 # dag   实例化DAG对象来进行任务
 
 dag = DAG(
-    dag_id='example_hello_world_dag',   # 唯一标识， 必须完全由字母、数字、下划线组成
-    default_args=default_args,  # 外部定义的 dic 格式的参数
+    dag_id='example_hello_world_dag',   # 唯一标识
+    default_args=default_args,  # 默认参数
     description='my first DAG', # 描述
     schedule_interval=timedelta(days=1))    # 调度时间
 
@@ -63,10 +63,5 @@ hello_operator = PythonOperator(
 # -------------------------------------------------------------------------------
 # dependencies
 
-sleep_operator.set_upstream(date_operator)  # sleep_operator会在date_operator执行完成之后执行
+sleep_operator.set_upstream(date_operator)
 hello_operator.set_upstream(date_operator)
-
-
-"""
-将以上python配置文件上传到airflowhome/dags目录下，默认AIRFLOW_HOME为安装节点的/root/airflow目录，
-"""
