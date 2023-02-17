@@ -28,9 +28,7 @@ dag = DAG(
     dag_id='example_hello_world_dag',   # 唯一标识， 必须完全由字母、数字、下划线组成
     default_args=default_args,  # 外部定义的 dic 格式的参数
     description='my first DAG', # 描述
-    schedule_interval=timedelta(days=1) # 调度时间
-    catchup=False  # 执行DAG时，将开始时间到目前所有该执行的任务都执行，默认为True
-    )
+    schedule_interval=timedelta(days=1))    # 调度时间
 
 # -------------------------------------------------------------------------------
 # first operator 打印日期，BashOperator用来执行Bash脚本
@@ -70,7 +68,5 @@ hello_operator.set_upstream(date_operator)
 
 
 """
-catchup可以在airflow配置文件airflow.cfg的scheduler下，设置catchup_by_default=True（默认）或False，这个设置是全局性的设置；
 将以上python配置文件上传到airflowhome/dags目录下，默认AIRFLOW_HOME为安装节点的/root/airflow目录，
-该文件每修改一次，需要重新上传一次，并重启airflow，DAG执行调度
 """
