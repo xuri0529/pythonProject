@@ -71,14 +71,24 @@ def writeToMysql(datas):
             if 'housedetail' not in itme:
                 cur.execute(createTable)
     try:
-        sql = "insert into housedetail (areaNames, totalPrices, secPrices, mianJis, jiaoYiGuanShus, createTimes, areas, areaDetails, huXings, louCengs, jieGous, jianZhuLeiXings, chaoXiangs, jianZhuJieGous, zhuangXius, tiHuBiLis, guaPaiTimes, fangWuYongTus, lastJiaoYis, houseNianXians, belongTos, diYas, fangBens) values (%s, %s, %s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s)"
+        # 过滤重复值需要注意联合索引字段总长度
+        sql = "insert into housedetail (areaNames, totalPrices, secPrices, mianJis, jiaoYiGuanShus, createTimes, areas, \
+        areaDetails, huXings, louCengs, jieGous, jianZhuLeiXings, chaoXiangs, jianZhuJieGous, zhuangXius, tiHuBiLis, \
+        guaPaiTimes, fangWuYongTus, lastJiaoYis, houseNianXians, belongTos, diYas, fangBens) values \
+        (%s, %s, %s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s) on duplicate key update \
+        areaNames=values(areaNames), totalPrices=values(totalPrices), secPrices=values(secPrices), mianJis=values(mianJis), \
+        jiaoYiGuanShus=values(jiaoYiGuanShus), createTimes=values(createTimes), areas=values(areas), areaDetails=values(areaDetails), \
+        huXings=values(huXings), louCengs=values(louCengs), jieGous=values(jieGous), jianZhuLeiXings=values(jianZhuLeiXings), \
+        chaoXiangs=values(chaoXiangs), jianZhuJieGous=values(jianZhuJieGous), zhuangXius=values(zhuangXius), tiHuBiLis=values(tiHuBiLis), \
+        guaPaiTimes=values(guaPaiTimes), fangWuYongTus=values(fangWuYongTus), lastJiaoYis=values(lastJiaoYis), \
+        houseNianXians=values(houseNianXians), belongTos=values(belongTos), diYas=values(diYas), fangBens=values(fangBens)"
         # 添加的数据datas的格式必须为list[tuple(),tuple(),tuple()]或者tuple(tuple(),tuple(),tuple())
         cur.executemany(sql, datas)
         conn.commit()
         print('Insert Successful'.center(60, '-'))
         datas = cur.fetchall()
     except Exception as e:
-        print('Fialed'.center(60,'~'))
+        print('Fialed'.center(60, '~'))
         print(e.args)
     finally:
         cur.close()
@@ -93,7 +103,6 @@ if __name__ == '__main__':
     sheet_names = getSheets(path, sheet_name=None)
 
     for sheet_name in sheet_names:
-
         columns, datas = getSheetDatas(sheet_name)
 
         writeToMysql(datas)
