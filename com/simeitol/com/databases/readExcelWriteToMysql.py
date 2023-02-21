@@ -71,7 +71,7 @@ def writeToMysql(datas):
             if 'housedetail' not in itme:
                 cur.execute(createTable)
     try:
-        # 过滤重复值需要注意联合索引字段总长度
+        # 存在重复数据时进行更新操作，联合索引的各字段长度的总和需要注意，对于重复值需要数据表定义好键和索引；
         sql = "insert into housedetail (areaNames, totalPrices, secPrices, mianJis, jiaoYiGuanShus, createTimes, areas, \
         areaDetails, huXings, louCengs, jieGous, jianZhuLeiXings, chaoXiangs, jianZhuJieGous, zhuangXius, tiHuBiLis, \
         guaPaiTimes, fangWuYongTus, lastJiaoYis, houseNianXians, belongTos, diYas, fangBens) values \
