@@ -4,25 +4,24 @@ import pymysql
 
 # 读取excel中的所有sheet
 def getSheets(path, sheet_name=None):
-    sheet_names = []
     # 读取所有sheet，sheet_name = None用于读取所有sheet(header从哪行开始读取数据，默认为0是从第一行开始，usecols = 'B:F'指读取B - -F列）
     datas = pd.read_excel(path, sheet_name=None)
-    for sheet_name in datas.keys():
-        sheet_names.append(sheet_name)
+    # dataframe类型的columns和keys()返回内容类型都是index类型数据,可以直接转list、tuple，或者使用values获得列表类型的值
+    sheet_names = tuple(datas.keys())
     return sheet_names
 
 
-# 获取字段列名称，并逐个读取sheet中的所有数据
+# 从指定行获取字段列名称，并逐个读取sheet中的所有数据
 def getSheetDatas(sheet_name):
     # header 指定作为列名的行，默认0，即取第一行的值为列名；若数据不包含列名，则设定 header = None
     datas = pd.read_excel(path, sheet_name=sheet_name, header=3)
     ## 在pandas中空值以nan展示，当写入数据库时的空值需要转换为None
     datas = datas.fillna(value='None')
-    columns = datas.columns
-    if all(datas.columns) == '':
-        columns = datas.columns
-    # index对象具有字典的映射功能
-    columns = columns.values
+    # 获取所有列dataframe类型的columns和keys()返回内容类型都是index类型数据，可以直接转list、tuple，或者使用values获得列表类型的值(下面2行语句返回相同)
+    columns = datas.keys().values
+    # columns = list(datas.keys())
+    # columns = datas.columns.values
+
     # 每次迭代提取DataFrame类型的值，并转换为list类型
     datas = (datas.values).tolist()
     return columns, datas
@@ -82,6 +81,7 @@ def writeToMysql(datas):
         chaoXiangs=values(chaoXiangs), jianZhuJieGous=values(jianZhuJieGous), zhuangXius=values(zhuangXius), tiHuBiLis=values(tiHuBiLis), \
         guaPaiTimes=values(guaPaiTimes), fangWuYongTus=values(fangWuYongTus), lastJiaoYis=values(lastJiaoYis), \
         houseNianXians=values(houseNianXians), belongTos=values(belongTos), diYas=values(diYas), fangBens=values(fangBens)"
+
         # 添加的数据datas的格式必须为list[tuple(),tuple(),tuple()]或者tuple(tuple(),tuple(),tuple())
         cur.executemany(sql, datas)
         conn.commit()
