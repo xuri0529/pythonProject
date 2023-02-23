@@ -17,10 +17,9 @@ def getSheetDatas(sheet_name):
     datas = pd.read_excel(path, sheet_name=sheet_name, header=3)
     ## 在pandas中空值以nan展示，当写入数据库时的空值需要转换为None,使用缺失数据填充函数fillna的指定值进行填充
     datas = datas.fillna(value='None')
-    # 获取所有列dataframe类型的columns和keys()返回内容类型都是index类型数据，可以直接转list、tuple，或者使用values获得列表类型的值(下面2行语句返回相同)
-    columns = datas.keys().values
-    # columns = list(datas.keys())
-    # columns = datas.columns.values
+    # 获取所有列dataframe类型的columns和keys()返回内容类型都是index类型数据，可以直接转list、tuple，或者使用to_numpy()获得列表类型的值(下面2行语句返回相同)
+    columns = datas.keys().to_numpy()
+    # columns = datas.columns.to_numpy()
 
     # 每次迭代提取DataFrame类型的值，并转换为list类型
     datas = (datas.values).tolist()
