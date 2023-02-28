@@ -1,6 +1,5 @@
 import pandas as pd
 import pymysql
-from datetime import datetime
 
 
 # 读取excel中的所有sheet
@@ -16,18 +15,8 @@ def getSheets(path, sheet_name=None):
 def getSheetDatas(sheet_name):
     # header 指定作为列名的行，默认0，即取第一行的值为列名；若数据不包含列名，则设定 header = None
     datas = pd.read_excel(path, sheet_name=sheet_name, header=3)
-
     ## 在pandas中空值以nan展示，当写入数据库时的空值需要转换为None,使用缺失数据填充函数fillna的指定值进行填充
     datas = datas.fillna(value='')
-    # # 定义新的列名称
-    datas['updateTime']=''
-    # 将新增列的数据完全赋值
-    datas.loc[:,'updateTime'] = nowTime()
-
-    # new_column = pd.DataFrame(columns=['updateTime'])
-    # # 横向合并DataFrame对象，即多个列进行合并
-    # datas = pd.concat([datas, new_column], axis=1)
-    # datas['updateTime'].fillna(value=nowTime(), inplace=True)
     # 获取所有列dataframe类型的columns和keys()返回内容类型都是index类型数据，可以直接转list、tuple，或者使用to_numpy()获得列表类型的值(下面2行语句返回相同)
     columns = datas.keys().to_numpy()
     # columns = datas.columns.to_numpy()
@@ -35,12 +24,6 @@ def getSheetDatas(sheet_name):
     # 每次迭代提取DataFrame类型的值，并转换为list类型
     datas = (datas.values).tolist()
     return columns, datas
-
-
-# 提取当前的年月日
-def nowTime():
-    now = str(datetime.now())[:19]
-    return now
 
 
 # 按照sheet依次写入mysql数据库
@@ -53,30 +36,29 @@ def writeToMysql(datas):
     tables_tuple = cur.fetchall()
     # 创建表sql
     createTable = """CREATE TABLE `housedetail` (
-                      `areaNames` varchar(25) DEFAULT NULL,
-                      `totalPrices` varchar(50) DEFAULT NULL,
-                      `secPrices` varchar(30) DEFAULT NULL,
-                      `mianJis` varchar(30) DEFAULT NULL,
-                      `jiaoYiGuanShus` varchar(20) DEFAULT NULL,
-                      `createTimes` varchar(20) DEFAULT NULL,
-                      `areas` varchar(20) DEFAULT NULL,
+                      `areaNames` varchar(255) DEFAULT NULL,
+                      `totalPrices` varchar(255) DEFAULT NULL,
+                      `secPrices` varchar(255) DEFAULT NULL,
+                      `mianJis` varchar(255) DEFAULT NULL,
+                      `jiaoYiGuanShus` varchar(255) DEFAULT NULL,
+                      `createTimes` varchar(255) DEFAULT NULL,
+                      `areas` varchar(255) DEFAULT NULL,
                       `areaDetails` varchar(255) DEFAULT NULL,
-                      `huXings` varchar(30) DEFAULT NULL,
-                      `louCengs` varchar(30) DEFAULT NULL,
-                      `jieGous` varchar(30) DEFAULT NULL,
-                      `jianZhuLeiXings` varchar(30) DEFAULT NULL,
-                      `chaoXiangs` varchar(30) DEFAULT NULL,
-                      `jianZhuJieGous` varchar(30) DEFAULT NULL,
-                      `zhuangXius` varchar(30) DEFAULT NULL,
-                      `tiHuBiLis` varchar(30) DEFAULT NULL,
-                      `guaPaiTimes` varchar(20) DEFAULT NULL,
-                      `fangWuYongTus` varchar(30) DEFAULT NULL,
-                      `lastJiaoYis` varchar(30) DEFAULT NULL,
-                      `houseNianXians` varchar(30) DEFAULT NULL,
-                      `belongTos` varchar(30) DEFAULT NULL,
-                      `diYas` varchar(200) DEFAULT NULL,
-                      `fangBens` varchar(30) DEFAULT NULL,
-                      `updateTime` varchar(20) not null default '1970-01-01 10:00:00'
+                      `huXings` varchar(255) DEFAULT NULL,
+                      `louCengs` varchar(255) DEFAULT NULL,
+                      `jieGous` varchar(255) DEFAULT NULL,
+                      `jianZhuLeiXings` varchar(255) DEFAULT NULL,
+                      `chaoXiangs` varchar(255) DEFAULT NULL,
+                      `jianZhuJieGous` varchar(255) DEFAULT NULL,
+                      `zhuangXius` varchar(255) DEFAULT NULL,
+                      `tiHuBiLis` varchar(255) DEFAULT NULL,
+                      `guaPaiTimes` varchar(255) DEFAULT NULL,
+                      `fangWuYongTus` varchar(255) DEFAULT NULL,
+                      `lastJiaoYis` varchar(255) DEFAULT NULL,
+                      `houseNianXians` varchar(255) DEFAULT NULL,
+                      `belongTos` varchar(255) DEFAULT NULL,
+                      `diYas` varchar(255) DEFAULT NULL,
+                      `fangBens` varchar(255) DEFAULT NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"""
     # 如果返回元祖长度为0就创建表
     if len(tables_tuple) == 0:
@@ -90,14 +72,14 @@ def writeToMysql(datas):
         # 存在重复数据时进行更新操作，联合索引的各字段长度的总和需要注意，对于重复值需要数据表定义好键和索引；
         sql = "insert into housedetail (areaNames, totalPrices, secPrices, mianJis, jiaoYiGuanShus, createTimes, areas, \
         areaDetails, huXings, louCengs, jieGous, jianZhuLeiXings, chaoXiangs, jianZhuJieGous, zhuangXius, tiHuBiLis, \
-        guaPaiTimes, fangWuYongTus, lastJiaoYis, houseNianXians, belongTos, diYas, fangBens, updateTime) values \
-        (%s, %s, %s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s) on duplicate key update \
+        guaPaiTimes, fangWuYongTus, lastJiaoYis, houseNianXians, belongTos, diYas, fangBens) values \
+        (%s, %s, %s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s) on duplicate key update \
         areaNames=values(areaNames), totalPrices=values(totalPrices), secPrices=values(secPrices), mianJis=values(mianJis), \
         jiaoYiGuanShus=values(jiaoYiGuanShus), createTimes=values(createTimes), areas=values(areas), areaDetails=values(areaDetails), \
         huXings=values(huXings), louCengs=values(louCengs), jieGous=values(jieGous), jianZhuLeiXings=values(jianZhuLeiXings), \
         chaoXiangs=values(chaoXiangs), jianZhuJieGous=values(jianZhuJieGous), zhuangXius=values(zhuangXius), tiHuBiLis=values(tiHuBiLis), \
         guaPaiTimes=values(guaPaiTimes), fangWuYongTus=values(fangWuYongTus), lastJiaoYis=values(lastJiaoYis), \
-        houseNianXians=values(houseNianXians), belongTos=values(belongTos), diYas=values(diYas), fangBens=values(fangBens), updateTime=values(updateTime)"
+        houseNianXians=values(houseNianXians), belongTos=values(belongTos), diYas=values(diYas), fangBens=values(fangBens)"
 
         # 添加的数据datas的格式必须为list[tuple(),tuple(),tuple()]或者tuple(tuple(),tuple(),tuple())
         cur.executemany(sql, datas)
