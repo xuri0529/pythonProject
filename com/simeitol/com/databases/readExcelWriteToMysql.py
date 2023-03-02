@@ -24,10 +24,6 @@ def getSheetDatas(sheet_name):
     # 将新增列的数据完全赋值
     datas.loc[:,'updateTime'] = nowTime()
 
-    # new_column = pd.DataFrame(columns=['updateTime'])
-    # # 横向合并DataFrame对象，即多个列进行合并
-    # datas = pd.concat([datas, new_column], axis=1)
-    # datas['updateTime'].fillna(value=nowTime(), inplace=True)
     # 获取所有列dataframe类型的columns和keys()返回内容类型都是index类型数据，可以直接转list、tuple，或者使用to_numpy()获得列表类型的值(下面2行语句返回相同)
     columns = datas.keys().to_numpy()
     # columns = datas.columns.to_numpy()
@@ -105,6 +101,7 @@ def writeToMysql(datas):
         print('Insert Successful'.center(60, '-'))
         datas = cur.fetchall()
     except Exception as e:
+        conn.rollback()
         print('Fialed'.center(60, '~'))
         print(e.args)
     finally:
