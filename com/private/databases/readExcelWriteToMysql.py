@@ -121,3 +121,4 @@ if __name__ == '__main__':
         columns, datas = getSheetDatas(sheet_name)
 
         writeToMysql(datas)
+
