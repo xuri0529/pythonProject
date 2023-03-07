@@ -43,7 +43,7 @@ def nowTime():
 
 
 # 按照sheet依次写入mysql数据库
-def writeToMysql(datas):
+def writeToMysql(sheet_name, datas):
     conn = pymysql.connect(host='localhost', user='root',
                            password='Mysql', database='testing', port=3309)
     cur = conn.cursor()
@@ -101,7 +101,7 @@ def writeToMysql(datas):
         # 添加的数据datas的格式必须为list[tuple(),tuple(),tuple()]或者tuple(tuple(),tuple(),tuple())
         cur.executemany(sql, datas)
         conn.commit()
-        print('Insert Successful'.center(60, '-'))
+        print((str(sheet_name) + ' Insert Successful').center(60, '-'))
         datas = cur.fetchall()
     except Exception as e:
         conn.rollback()
@@ -123,5 +123,5 @@ if __name__ == '__main__':
     for sheet_name in sheet_names:
         columns, datas = getSheetDatas(sheet_name)
 
-        writeToMysql(datas)
+        writeToMysql(sheet_name, datas)
 
