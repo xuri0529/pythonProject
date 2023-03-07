@@ -28,8 +28,8 @@ def getSheetDatas(sheet_name):
     columns = datas.keys().to_numpy()
     # columns = datas.columns.to_numpy()
 
-    # 每次迭代提取DataFrame类型的值，并转换为list类型
-    datas = (datas.values).tolist()
+    # 每次迭代提取DataFrame类型的值，需要使用to_numpy()获得值,并转换为list类型
+    datas = datas.to_numpy().tolist()
     return columns, datas
 
 
@@ -42,7 +42,7 @@ def nowTime():
 # 按照sheet依次写入mysql数据库
 def writeToMysql(datas):
     conn = pymysql.connect(host='localhost', user='root',
-                           password='Mysqlroot', database='0220testing', port=3306)
+                           password='Mysql', database='testing', port=3309)
     cur = conn.cursor()
     # 判断表是否存在
     cur.execute("show tables")
