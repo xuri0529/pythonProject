@@ -17,6 +17,9 @@ def getSheetDatas(sheet_name):
     # header 指定作为列名的行，默认0，即取第一行的值为列名；若数据不包含列名，则设定 header = None
     datas = pd.read_excel(path, sheet_name=sheet_name, header=3)
 
+    # 处理数据格式，如：94.84平米，去除单位保留数字,将第三列数据转str后截取掉后2个字符，保存到datas[:,3]第三列中
+    datas.iloc[:,3] = datas.iloc[:,3].str[:-2]
+
     ## 在pandas中空值以nan展示，当写入数据库时的空值需要转换为None,使用缺失数据填充函数fillna的指定值进行填充
     datas = datas.fillna(value='')
     # # 定义新的列名称
@@ -50,9 +53,9 @@ def writeToMysql(datas):
     # 创建表sql
     createTable = """CREATE TABLE `housedetail` (
                       `areaNames` varchar(25) DEFAULT NULL,
-                      `totalPrices` varchar(50) DEFAULT NULL,
-                      `secPrices` varchar(30) DEFAULT NULL,
-                      `mianJis` varchar(30) DEFAULT NULL,
+                      `totalPrices` float DEFAULT NULL,
+                      `secPrices` float DEFAULT NULL,
+                      `mianJis` float DEFAULT NULL,
                       `jiaoYiGuanShus` varchar(20) DEFAULT NULL,
                       `createTimes` varchar(20) DEFAULT NULL,
                       `areas` varchar(20) DEFAULT NULL,
