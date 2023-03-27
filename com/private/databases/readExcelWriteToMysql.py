@@ -44,6 +44,7 @@ def nowTime():
 
 # 按照sheet依次写入mysql数据库
 def writeToMysql(sheet_name, datas):
+
     conn = pymysql.connect(host='localhost', user='root',
                            password='Mysql', database='testing', port=3309)
     cur = conn.cursor()
@@ -82,9 +83,10 @@ def writeToMysql(sheet_name, datas):
         cur.execute(createTable)
     # 如果返回元祖长度不为0且表名称不存在时创建表
     if len(tables_tuple) != 0:
-        for itme in tables_tuple:
-            if 'housedetail' not in itme:
-                cur.execute(createTable)
+        # 返回的tables_tuple为元祖嵌套元祖，使用列表推导式生成新列表
+        tables_list = [x[0] for x in tables_tuple]
+        if 'housedetail' not in tables_list:
+            cur.execute(createTable)
     try:
         # 存在重复数据时进行更新操作，联合索引的各字段长度的总和需要注意，对于重复值需要数据表定义好键和索引；
         sql = "insert into housedetail (areaNames, totalPrices, secPrices, mianJis, jiaoYiGuanShus, createTimes, areas, \
